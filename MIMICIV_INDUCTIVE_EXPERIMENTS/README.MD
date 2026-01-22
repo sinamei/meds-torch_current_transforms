@@ -36,12 +36,12 @@ Run the following end to end script to generate triplet tensors
 ```console
 export MIMICIV_MEDS_DIR=??? # set to the directory in which you want to store the MIMIC-IV MEDS data
 export MIMICIV_TRIPLET_TENSOR_DIR=??? # set to the directory in which you want to output the tensorized MIMIC-IV data
-export N_PARALLEL_WORKERS=8 # set to the number of parallel workers you want to use
+export N_WORKERS=8 # set to the number of parallel workers you want to use
 export PIPELINE_CONFIG_PATH="$(pwd)/MIMICIV_INDUCTIVE_EXPERIMENTS/configs/triplet_config.yaml" # set to the directory in which the config file is stored, must be an absolute path.
 export JOBLIB_RUNNER_CONFIG_PATH="$(pwd)/MIMICIV_INDUCTIVE_EXPERIMENTS/configs/joblib_runner.yaml" # set to the directory in which the config file is stored, must be an absolute path.
 
 
-bash MIMICIV_INDUCTIVE_EXPERIMENTS/tokenize.sh $MIMICIV_MEDS_DIR $MIMICIV_TRIPLET_TENSOR_DIR $N_PARALLEL_WORKERS $PIPELINE_CONFIG_PATH --stage_runner_fp $JOBLIB_RUNNER_CONFIG_PATH
+bash MIMICIV_INDUCTIVE_EXPERIMENTS/tokenize.sh $MIMICIV_MEDS_DIR $MIMICIV_TRIPLET_TENSOR_DIR $N_WORKERS $PIPELINE_CONFIG_PATH --stage_runner_fp $JOBLIB_RUNNER_CONFIG_PATH
 ```
 Error Message: MIMICIV_INDUCTIVE_EXPERIMENTS/tokenize.sh: line 42: MEDS_transform-runner: command not found
 
@@ -63,11 +63,11 @@ Run the following end to end script to generate eic tensors
 ```console
 export MIMICIV_MEDS_DIR=??? # set to the directory in which you want to store the raw MIMIC-IV data
 export MIMICIV_EIC_DIR=??? # set to the directory in which you want to output the tensorized MIMIC-IV data
-export N_PARALLEL_WORKERS=8 # set to the number of parallel workers you want to use
+export N_WORKERS=8 # set to the number of parallel workers you want to use
 export PIPELINE_CONFIG_PATH="$(pwd)/MIMICIV_INDUCTIVE_EXPERIMENTS/configs/eic_config.yaml" # set to the directory in which the config file is stored, must be an absolute path.
 export JOBLIB_RUNNER_CONFIG_PATH="$(pwd)/MIMICIV_INDUCTIVE_EXPERIMENTS/configs/joblib_runner.yaml" # set to the directory in which the config file is stored, must be an absolute path.
 
-bash MIMICIV_INDUCTIVE_EXPERIMENTS/tokenize.sh $MIMICIV_MEDS_DIR $MIMICIV_EIC_DIR $N_PARALLEL_WORKERS $PIPELINE_CONFIG_PATH --stage_runner_fp $JOBLIB_RUNNER_CONFIG_PATH
+bash MIMICIV_INDUCTIVE_EXPERIMENTS/tokenize.sh $MIMICIV_MEDS_DIR $MIMICIV_EIC_DIR $N_WORKERS $PIPELINE_CONFIG_PATH --stage_runner_fp $JOBLIB_RUNNER_CONFIG_PATH
 ```
 
 ## Task Extraction

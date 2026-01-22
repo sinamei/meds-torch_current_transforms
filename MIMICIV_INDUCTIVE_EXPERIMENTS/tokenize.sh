@@ -5,15 +5,16 @@ set -e
 
 # Function to display help message
 function display_help() {
-    echo "Usage: $0 <MEDS_DIR> <N_PARALLEL_WORKERS>"
+    echo "Usage: $0 <MEDS_DIR> <MODEL_DIR> <N_WORKERS> <PIPELINE_CONFIG_PATH> [additional args]"
     echo
-    echo "This script processes MIMIC-IV data through several steps, handling raw data conversion,"
-    echo "sharding events, splitting subjects, converting to sharded events, and merging into a MEDS cohort."
+    echo "This script processes MIMIC-IV data through the MEDS transformation pipeline."
     echo
     echo "Arguments:"
-    echo "  MEDS_DIR                              Output directory for processed MEDS data."
-    echo "  N_PARALLEL_WORKERS                    Number of parallel workers for processing."
+    echo "  MEDS_DIR                              Input directory for MEDS data."
+    echo "  MODEL_DIR                             Output directory for processed data."
+    echo "  N_WORKERS                             Number of parallel workers for processing."
     echo "  PIPELINE_CONFIG_PATH                  Pipeline configuration file."
+    echo "  [additional args]                     Additional arguments passed to MEDS_transform-pipeline."
     echo
     echo "Options:"
     echo "  -h, --help          Display this help message and exit."
@@ -35,6 +36,11 @@ export MEDS_DIR="$1"
 export MODEL_DIR="$2"
 export N_WORKERS="$3"
 export PIPELINE_CONFIG_PATH="$4"
+
+echo "MEDS_DIR: $MEDS_DIR"
+echo "MODEL_DIR: $MODEL_DIR"
+echo "N_WORKERS: $N_WORKERS"
+echo "PIPELINE_CONFIG_PATH: $PIPELINE_CONFIG_PATH"
 
 shift 4
 
