@@ -8,7 +8,7 @@ from omegaconf import OmegaConf
 
 
 def get_vocab_size(code_metadata_fp, postpend_eos_token):
-    vocab_size = pl.scan_parquet(code_metadata_fp).select("code/vocab_index").max().collect().item() + 1
+    vocab_size = pl.read_parquet(code_metadata_fp).select("code/vocab_index").max().collect().item() + 1
     vocab_size += int(postpend_eos_token)
     return vocab_size
 

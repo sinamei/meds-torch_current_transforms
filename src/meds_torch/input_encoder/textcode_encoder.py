@@ -137,7 +137,7 @@ class TextCodeEmbedder(nn.Module, Module, TimeableMixin):
         Returns:
             code_to_tokens_map: A dictionary mapping from code to tokens
         """
-        code_metadata = pl.scan_parquet(self.cfg.code_metadata_fp).select(
+        code_metadata = pl.read_parquet(self.cfg.code_metadata_fp).select(
             ["code", "code/vocab_index", "description"]
         )
         code_metadata = code_metadata.sort("code/vocab_index").collect()

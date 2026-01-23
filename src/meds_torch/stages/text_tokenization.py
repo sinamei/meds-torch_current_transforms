@@ -67,7 +67,7 @@ def main(cfg: DictConfig):
         rwlock_wrap(
             in_fp,
             schema_out_fp,
-            pl.scan_parquet,
+            pl.read_parquet,
             write_lazyframe,
             extract_statics_and_schema,
             do_overwrite=cfg.do_overwrite,
@@ -83,7 +83,7 @@ def main(cfg: DictConfig):
         rwlock_wrap(
             in_fp,
             event_seq_out_fp,
-            pl.scan_parquet,
+            pl.read_parquet,
             write_fn,
             extract_seq_of_subject_events,
             do_overwrite=cfg.do_overwrite,
