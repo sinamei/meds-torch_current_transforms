@@ -15,8 +15,8 @@ stages:
   - fit_normalization
   - fit_vocabulary_indices
   - normalization
-  - tokenization
-  - tensorization
+  - tokenization:
+      output_dir: ${output_dir}/tokenization
 
 stage_configs:
   custom_time_token:
@@ -80,5 +80,3 @@ stage_configs:
         values/quantile/20: 10 # 10 years
         values/quantile/21: 20 # 20 years
         values/quantile/22: 40 # 40 years
-  tokenization:
-    _script: "python -m meds_torch.utils.custom_tokenization"

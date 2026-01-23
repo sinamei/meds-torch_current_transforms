@@ -93,3 +93,7 @@ meds-torch-eval = "meds_torch.eval:main"
 meds-torch-finetune = "meds_torch.finetune:main"
 meds-torch-tune = "meds_torch.tune:main"
 meds-torch-latest-dir = "meds_torch.latest_dir:main"
+
+[project.entry-points."MEDS_transforms.stages"]
+tokenization = "meds_torch.stages:tokenization"
+text_tokenization = "meds_torch.stages:text_tokenization"
