@@ -16,7 +16,6 @@ import polars as pl
 from loguru import logger
 from MEDS_transforms.mapreduce.rwlock import rwlock_wrap
 from MEDS_transforms.mapreduce.shard_iteration import shard_iterator
-from MEDS_transforms.utils import write_lazyframe
 from omegaconf import DictConfig, OmegaConf
 from importlib.resources import files
 
@@ -24,6 +23,12 @@ PREPROCESS_CONFIG_YAML = files("MEDS_transforms").joinpath("configs/_main.yaml")
 SECONDS_PER_MINUTE = 60.0
 SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60.0
 SECONDS_PER_DAY = SECONDS_PER_HOUR * 24.0
+
+
+def write_lazyframe(df: pl.LazyFrame, out_fp: Path) -> None:
+    if isinstance(df, pl.LazyFrame):
+        df = df.collect()
+    df.write_parquet(out_fp, use_pyarrow=True)
 
 
 def fill_to_nans(col: str | pl.Expr) -> pl.Expr:
