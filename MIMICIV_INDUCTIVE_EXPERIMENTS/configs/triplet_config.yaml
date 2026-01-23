@@ -1,9 +1,7 @@
-defaults:
-  - _preprocess
-  - _self_
 input_dir: ${oc.env:MEDS_DIR}
 cohort_dir: ${oc.env:MODEL_DIR}
 output_dir: ${oc.env:MODEL_DIR}
+
 stages:
   - fit_filter_and_occlude:
       _base_stage: aggregate_code_metadata
