@@ -20,7 +20,7 @@ stages:
       min_measurements_per_subject: 10
   - occlude_outliers
   - reorder_measurements:
-      order: $(python -m meds_torch.utils.get_all_measurements metadata_fp=${oc.env:MODEL_DIR}/metadata/codes.parquet)
+      order: $(python -m meds_torch.utils.get_all_measurements metadata_fp=${output_dir}/metadata/codes.parquet)
   - fit_normalization:
       _base_stage: aggregate_code_metadata
       aggregations:
