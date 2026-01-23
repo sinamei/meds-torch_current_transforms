@@ -7,7 +7,8 @@ import hydra
 import polars as pl
 from loguru import logger
 from MEDS_transforms.mapreduce.mapper import map_over
-from MEDS_transforms.mapreduce.utils import shard_iterator
+from MEDS_transforms.mapreduce.rwlock import rwlock_wrap
+from MEDS_transforms.mapreduce.shard_iteration import shard_iterator
 from nested_ragged_tensors.ragged_numpy import JointNestedRaggedTensorDict
 from omegaconf import DictConfig
 from importlib.resources import files

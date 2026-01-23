@@ -14,7 +14,8 @@ from pathlib import Path
 import hydra
 import polars as pl
 from loguru import logger
-from MEDS_transforms.mapreduce.utils import rwlock_wrap, shard_iterator
+from MEDS_transforms.mapreduce.rwlock import rwlock_wrap
+from MEDS_transforms.mapreduce.shard_iteration import shard_iterator
 from MEDS_transforms.utils import hydra_loguru_init, write_lazyframe
 from omegaconf import DictConfig, OmegaConf
 from importlib.resources import files
