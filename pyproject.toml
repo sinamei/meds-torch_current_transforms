@@ -97,3 +97,6 @@ meds-torch-latest-dir = "meds_torch.latest_dir:main"
 [project.entry-points."MEDS_transforms.stages"]
 tokenization = "meds_torch.stages:tokenization"
 text_tokenization = "meds_torch.stages:text_tokenization"
+custom_time_token = "meds_torch.stages:custom_time_token"
+custom_filter_measurements = "meds_torch.stages:custom_filter_measurements"
+quantile_binning = "meds_torch.stages:quantile_binning"
