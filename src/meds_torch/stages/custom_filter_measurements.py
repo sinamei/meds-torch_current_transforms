@@ -4,25 +4,29 @@ This stage filters measurements by code frequency with support for additional co
 that should always be retained (e.g., MEDS_DEATH, HOSPITAL_ADMISSION, etc.).
 """
 
-import logging
+from collections.abc import Callable
 
-from MEDS_transforms.mapreduce.mapper import map_over
+import polars as pl
 from MEDS_transforms.stages import Stage
 from omegaconf import DictConfig
 
 from meds_torch.utils.custom_filter_measurements import filter_measurements_fntr
 
-logger = logging.getLogger(__name__)
 
-
-def main(cfg: DictConfig):
+@Stage.register
+def custom_filter_measurements(
+    stage_cfg: DictConfig, code_metadata: pl.LazyFrame, code_modifiers: list[str] | None = None
+) -> Callable[[pl.LazyFrame], pl.LazyFrame]:
     """Filters measurements by code frequency with support for additional required codes.
 
     This is a wrapper around the custom_filter_measurements utility that integrates with MEDS-transforms.
+
+    Args:
+        stage_cfg: Configuration for the custom_filter_measurements stage.
+        code_metadata: Metadata about codes including occurrence counts.
+        code_modifiers: Optional list of code modifier columns.
+
+    Returns:
+        A function that filters a MEDS dataframe based on code frequency.
     """
-    map_over(cfg, compute_fn=filter_measurements_fntr)
-
-
-# Register the stage with MEDS-transforms
-# This is a data stage (processes data shards, not metadata)
-stage = Stage.register(main_fn=main, is_metadata=False)
+    return filter_measurements_fntr(stage_cfg, code_metadata, code_modifiers)

@@ -7,10 +7,10 @@ WARNING: DO NOT RUN THIS WITH PARALLELISM as it will recursively perform quantil
 """
 
 import logging
+from collections.abc import Callable
 from pathlib import Path
 
 import polars as pl
-from MEDS_transforms.mapreduce.mapper import map_over
 from MEDS_transforms.stages import Stage
 from omegaconf import DictConfig
 
@@ -22,26 +22,43 @@ from meds_torch.utils.quantile_binning import (
 logger = logging.getLogger(__name__)
 
 
-def main(cfg: DictConfig):
+@Stage.register
+def quantile_binning(
+    stage_cfg: DictConfig, code_metadata: pl.LazyFrame, code_modifiers: list[str] | None = None
+) -> Callable[[pl.LazyFrame], pl.LazyFrame]:
     """Bins the numeric values and collapses the bin number into the code name.
 
-    This stage performs two operations:
-    1. Transforms data shards by binning numeric values into quantiles
-    2. Updates the code metadata to reflect the new quantile-based codes
+    This function returns a transformation that bins numeric values into quantiles based on
+    metadata and custom quantile specifications.
 
-    DO NOT RUN THIS WITH PARALLELISM as it will recursively perform quantile binning N workers times.
+    WARNING: DO NOT RUN THIS WITH PARALLELISM as it will recursively perform quantile binning N workers times.
+
+    Args:
+        stage_cfg: Configuration for the quantile_binning stage, including custom_quantiles.
+        code_metadata: Metadata about codes including quantile information.
+        code_modifiers: Optional list of code modifier columns.
+
+    Returns:
+        A function that transforms a MEDS dataframe by binning numeric values.
     """
+    custom_quantiles = stage_cfg.get("custom_quantiles", {})
 
-    def normalize(df, code_metadata, code_modifiers=None):
+    def transform_fn(df: pl.LazyFrame) -> pl.LazyFrame:
         return quantile_normalize(
             df,
             code_metadata,
             code_modifiers=code_modifiers,
-            custom_quantiles=cfg.stage_cfg.get("custom_quantiles", {}),
+            custom_quantiles=custom_quantiles,
         )
 
-    map_over(cfg, compute_fn=normalize)
+    return transform_fn
 
+
+def quantile_binning_metadata_main(cfg: DictConfig):
+    """Updates code metadata to reflect quantile-based codes.
+
+    This is a metadata-only stage that converts the code metadata after quantile binning.
+    """
     custom_quantiles = cfg.stage_cfg.get("custom_quantiles", {})
 
     metadata_input_dir = Path(cfg.stage_cfg.metadata_input_dir)
@@ -50,10 +67,9 @@ def main(cfg: DictConfig):
 
     output_fp = metadata_input_dir / "codes.parquet"
     output_fp.parent.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Indices assigned. Writing to {output_fp}")
+    logger.info(f"Quantile metadata updated. Writing to {output_fp}")
     quantile_code_metadata.write_parquet(output_fp, use_pyarrow=True)
 
 
-# Register the stage with MEDS-transforms
-# This is a data stage that also modifies metadata
-stage = Stage.register(main_fn=main, is_metadata=False)
+# Register as a metadata stage
+quantile_binning_metadata = Stage.register(main_fn=quantile_binning_metadata_main, is_metadata=True)

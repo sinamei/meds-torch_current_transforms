@@ -4,6 +4,7 @@ output_dir: ${oc.env:MODEL_DIR}
 
 stages:
   - fit_filter_and_occlude:
+      # scans all shards and computes per-code aggregates stored in metadata/
       _base_stage: aggregate_code_metadata
       aggregations:
         - code/n_occurrences
@@ -11,14 +12,19 @@ stages:
         - values/sum
         - values/sum_sqd
         - values/n_occurrences
+  # drops codes with less than min_subject_per_code using metadata/
   - filter_measurements:
       min_subjects_per_code: 10000
+  # removes subjects with too few events or too few measurements
   - filter_subjects:
       min_events_per_subject: 10
       min_measurements_per_subject: 10
+  # occludes outliers beyond threshold stddev_cutoff (currently no-op as stddev_cutoff not set)
   - occlude_outliers
+  # reorder measurements within each (subject_id, time) event
   - reorder_measurements:
       order: $(python -m meds_torch.utils.get_all_measurements metadata_fp=${output_dir}/metadata/codes.parquet)
+  # recompute code metadata but with quantile stats
   - fit_normalization:
       _base_stage: aggregate_code_metadata
       aggregations:
@@ -26,7 +32,9 @@ stages:
         - code/n_subjects
         - name: values/quantiles
           quantiles: [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ]
+  # assign code/vocab_index to each cod
   - fit_vocabulary_indices
+  #  convert code → code/vocab_index and normalise numeric values per code
   - normalization
   - tokenization:
       output_dir: ${output_dir}/tokenization

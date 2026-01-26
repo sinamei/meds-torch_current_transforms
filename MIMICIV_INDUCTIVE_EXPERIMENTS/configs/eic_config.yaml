@@ -55,6 +55,32 @@ stages:
           values/quantile/20: 10 # 10 years
           values/quantile/21: 20 # 20 years
           values/quantile/22: 40 # 40 years
+  # Update metadata to reflect quantile-based codes
+  - quantile_binning_metadata:
+      custom_quantiles:
+        TIME//DELTA//TOKEN:
+          values/quantile/1: 0.00000190258 # 1 minute
+          values/quantile/2: 0.00000951293 # 5 minutes
+          values/quantile/3: 0.00001902587 # 10 minutes
+          values/quantile/4: 0.00005707762 # 30 minutes
+          values/quantile/5: 0.00011415525 # 1 hour
+          values/quantile/6: 0.00034246575 # 3 hours
+          values/quantile/7: 0.0006849315 # 6 hours
+          values/quantile/8: 0.00136986301 # 12 hours
+          values/quantile/9: 0.00273972602 # 1 day
+          values/quantile/10: 0.00547945205 # 2 days
+          values/quantile/11: 0.0109589041 # 4 days
+          values/quantile/12: 0.01917808219 # 7 days
+          values/quantile/13: 0.03835616438 # 14 days
+          values/quantile/14: 0.08219178082 # 30 days
+          values/quantile/15: 0.16438356164 # 60 days
+          values/quantile/16: 0.32876712328 # 120 days
+          values/quantile/17: 1 # 1 year
+          values/quantile/18: 2 # 2 years
+          values/quantile/19: 5 # 5 years
+          values/quantile/20: 10 # 10 years
+          values/quantile/21: 20 # 20 years
+          values/quantile/22: 40 # 40 years
   # Reorder measurements within each (subject_id, time) event
   - reorder_measurements:
       order: $(python -m meds_torch.utils.get_all_measurements metadata_fp=${output_dir}/metadata/codes.parquet)
