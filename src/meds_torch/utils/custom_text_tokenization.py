@@ -262,7 +262,7 @@ def extract_seq_of_subject_events(
     # Process text values if they exist
     text_mapping = {}
     if "text_value" in df.columns:
-        text_mapping = tokenize_text_values(dynamic.collect())
+        text_mapping = tokenize_text_values(dynamic.collect() if isinstance(dynamic, pl.LazyFrame) else dynamic)
 
     time_delta_days_expr = (pl.col("time").diff().dt.total_seconds() / SECONDS_PER_DAY).cast(pl.Float32)
 
