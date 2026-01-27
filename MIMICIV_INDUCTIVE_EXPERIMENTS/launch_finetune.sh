@@ -24,7 +24,7 @@ run_job() {
     export ROOT_DIR=${root_dir}
     export MEDS_DIR="${ROOT_DIR}/meds/"
     export TASKS_DIR=${MEDS_DIR}/tasks/
-    export TENSOR_DIR=${ROOT_DIR}/${tensor_dir}_tensors/
+    export TENSOR_DIR=${ROOT_DIR}/tokenised_data/${tensor_dir}
     export OUTPUT_DIR=${ROOT_DIR}/results/${METHOD}/${experiment}/${task_name}/
     PRETRAIN_SWEEP_DIR=${ROOT_DIR}/results/${METHOD}/${experiment}/pretrain/sweep/
     LATEST_PRETRAIN_SWEEP_DIR=$(meds-torch-latest-dir path=${PRETRAIN_SWEEP_DIR})
@@ -79,6 +79,7 @@ TASKS=(
 for TASK_NAME in "${TASKS[@]}"; do
     run_job ${TASK_NAME} "eic_mtr" "eic" "$ROOT_DIR" "$CONDA_ENV" "$METHOD"
     run_job ${TASK_NAME} "triplet_mtr" "triplet" "$ROOT_DIR" "$CONDA_ENV" "$METHOD"
+    run_job ${TASK_NAME} "textcode_mtr" "multimodal_triplet" "$ROOT_DIR" "$CONDA_ENV" "$METHOD"
 done
 
 echo "All jobs completed sequentially."

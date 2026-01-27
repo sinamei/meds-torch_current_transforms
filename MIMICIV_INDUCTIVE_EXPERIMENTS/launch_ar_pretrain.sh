@@ -48,5 +48,6 @@ run_job() {
 # Run jobs sequentially
 run_job eic_forecasting "eic_forecast_mtr" "eic" "$ROOT_DIR" "$CONDA_ENV"
 run_job triplet_forecasting "triplet_forecast_mtr" "triplet" "$ROOT_DIR" "$CONDA_ENV"
+run_job triplet_forecasting "textcode_forecast_mtr" "multimodal_triplet" "$ROOT_DIR" "$CONDA_ENV"
 
 echo "All jobs completed sequentially."

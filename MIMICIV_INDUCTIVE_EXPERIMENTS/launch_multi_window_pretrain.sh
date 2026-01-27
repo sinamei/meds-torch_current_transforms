@@ -51,5 +51,6 @@ run_job() {
 # Run jobs sequentially
 run_job "$METHOD" "eic_mtr" "eic" "$ROOT_DIR" "$CONDA_ENV"
 run_job "$METHOD" "triplet_mtr" "triplet" "$ROOT_DIR" "$CONDA_ENV"
+run_job "$METHOD" "textcode_mtr" "multimodal_triplet" "$ROOT_DIR" "$CONDA_ENV"
 
 echo "All jobs completed sequentially."
