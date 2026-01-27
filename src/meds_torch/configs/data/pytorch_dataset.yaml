@@ -2,11 +2,11 @@ _target_: meds_torch.data.datamodule.MEDSDataModule.initialize
 dataset_cls: meds_torch.data.components.pytorch_dataset.PytorchDataset
 
 # Path params
-data_dir: ${paths.data_dir}
+data_dir: ${paths.data_dir}/tokenization
 meds_cohort_dir: ${paths.meds_cohort_dir}
-cache_dir: ${paths.data_dir}/.pytorch_dataset_cache_dir/
+cache_dir: ${data.data_dir}/.pytorch_dataset_cache_dir/
 code_metadata_fp: ${paths.data_dir}/metadata/codes.parquet
-schema_files_root: ${paths.data_dir}/tokenization/schemas
+schema_files_root: ${data.data_dir}/schemas
 tasks_root: ${paths.meds_cohort_dir}/tasks
 split_names:
     train: train # training data is in ${paths.data_dir}/${split_names.train}**/*.nrt

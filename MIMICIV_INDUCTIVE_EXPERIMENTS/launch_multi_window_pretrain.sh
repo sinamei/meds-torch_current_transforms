@@ -22,7 +22,7 @@ run_job() {
     export CONFIGS_FOLDER="MIMICIV_INDUCTIVE_EXPERIMENTS"
     export ROOT_DIR=${root_dir}
     export MEDS_DIR="${ROOT_DIR}/meds/"
-    export TENSOR_DIR=${ROOT_DIR}/${tensor_dir}_tensors/
+    export TENSOR_DIR=${ROOT_DIR}/tokenised_data/${tensor_dir}
     export OUTPUT_DIR=${ROOT_DIR}/results/${METHOD}/${experiment}/
     PRETRAIN_SWEEP_DIR=${OUTPUT_DIR}/pretrain/sweep/
 
