@@ -27,7 +27,14 @@ run_job() {
     export TENSOR_DIR=${ROOT_DIR}/tokenised_data/${tensor_dir}
     export OUTPUT_DIR=${ROOT_DIR}/results/${METHOD}/${experiment}/${task_name}/
     PRETRAIN_SWEEP_DIR=${ROOT_DIR}/results/${METHOD}/${experiment}/pretrain/sweep/
-    LATEST_PRETRAIN_SWEEP_DIR=$(meds-torch-latest-dir path=${PRETRAIN_SWEEP_DIR})
+
+    # Get latest pretrain sweep directory if it exists and has valid timestamp subdirs
+    if [ -d "${PRETRAIN_SWEEP_DIR}" ] && [ -n "$(find ${PRETRAIN_SWEEP_DIR} -maxdepth 1 -type d -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_*' 2>/dev/null)" ]; then
+        LATEST_PRETRAIN_SWEEP_DIR=$(meds-torch-latest-dir path=${PRETRAIN_SWEEP_DIR} 2>/dev/null) || LATEST_PRETRAIN_SWEEP_DIR=""
+    else
+        LATEST_PRETRAIN_SWEEP_DIR=""
+    fi
+
     FINETUNE_SWEEP_DIR=${OUTPUT_DIR}/finetune/sweep/
     FINETUNE_MULTISEED_DIR=${OUTPUT_DIR}/finetune/multiseed/
 
@@ -35,7 +42,12 @@ run_job() {
     source $(conda info --base)/etc/profile.d/conda.sh
     conda activate ${conda_env}
 
-    SWEEP_CHECK_FILE=$(meds-torch-latest-dir path=${FINETUNE_SWEEP_DIR})/sweep_results_summary.parquet 2>/dev/null || SWEEP_CHECK_FILE=""
+    # Check if sweep directory exists and has valid timestamp subdirs before calling meds-torch-latest-dir
+    if [ -d "${FINETUNE_SWEEP_DIR}" ] && [ -n "$(find ${FINETUNE_SWEEP_DIR} -maxdepth 1 -type d -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_*' 2>/dev/null)" ]; then
+        SWEEP_CHECK_FILE=$(meds-torch-latest-dir path=${FINETUNE_SWEEP_DIR} 2>/dev/null)/sweep_results_summary.parquet || SWEEP_CHECK_FILE=""
+    else
+        SWEEP_CHECK_FILE=""
+    fi
 
     if [ -z "$SWEEP_CHECK_FILE" ] || [ ! -f "$SWEEP_CHECK_FILE" ]; then
     MAX_POLARS_THREADS=4 meds-torch-tune --config-name=finetune callbacks=tune_default trainer=ray \
@@ -48,10 +60,20 @@ run_job() {
         echo "SWEEP_CHECK_FILE already exists. Skipping the fine-tuning sweep for ${task_name}."
     fi
 
-    echo BEST_CONFIG_PATH=$(meds-torch-latest-dir path=${FINETUNE_SWEEP_DIR})/best_config.json
-    BEST_CONFIG_PATH=$(meds-torch-latest-dir path=${FINETUNE_SWEEP_DIR})/best_config.json
+    # Get best config path from completed sweep if directory exists and has valid timestamp subdirs
+    if [ -d "${FINETUNE_SWEEP_DIR}" ] && [ -n "$(find ${FINETUNE_SWEEP_DIR} -maxdepth 1 -type d -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_*' 2>/dev/null)" ]; then
+        BEST_CONFIG_PATH=$(meds-torch-latest-dir path=${FINETUNE_SWEEP_DIR} 2>/dev/null)/best_config.json || BEST_CONFIG_PATH=""
+        echo "BEST_CONFIG_PATH=${BEST_CONFIG_PATH}"
+    else
+        BEST_CONFIG_PATH=""
+    fi
 
-    MULTISEED_CHECK_FILE=$(meds-torch-latest-dir path=${FINETUNE_MULTISEED_DIR})/sweep_results_summary.parquet 2>/dev/null || MULTISEED_CHECK_FILE=""
+    # Check if multiseed directory exists and has valid timestamp subdirs before calling meds-torch-latest-dir
+    if [ -d "${FINETUNE_MULTISEED_DIR}" ] && [ -n "$(find ${FINETUNE_MULTISEED_DIR} -maxdepth 1 -type d -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_*' 2>/dev/null)" ]; then
+        MULTISEED_CHECK_FILE=$(meds-torch-latest-dir path=${FINETUNE_MULTISEED_DIR} 2>/dev/null)/sweep_results_summary.parquet || MULTISEED_CHECK_FILE=""
+    else
+        MULTISEED_CHECK_FILE=""
+    fi
 
     if [ -z "$MULTISEED_CHECK_FILE" ] || [ ! -f "$MULTISEED_CHECK_FILE" ]; then
     MAX_POLARS_THREADS=4 meds-torch-tune --config-name=finetune callbacks=tune_default trainer=ray \

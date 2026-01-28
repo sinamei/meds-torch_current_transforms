@@ -30,7 +30,12 @@ run_job() {
     source $(conda info --base)/etc/profile.d/conda.sh
     conda activate ${conda_env}
 
-    CHECK_FILE=$(meds-torch-latest-dir path=${PRETRAIN_SWEEP_DIR})/sweep_results_summary.parquet 2>/dev/null || CHECK_FILE=""
+    # Check if sweep directory exists and has valid timestamp subdirs before calling meds-torch-latest-dir
+    if [ -d "${PRETRAIN_SWEEP_DIR}" ] && [ -n "$(find ${PRETRAIN_SWEEP_DIR} -maxdepth 1 -type d -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_*' 2>/dev/null)" ]; then
+        CHECK_FILE=$(meds-torch-latest-dir path=${PRETRAIN_SWEEP_DIR} 2>/dev/null)/sweep_results_summary.parquet || CHECK_FILE=""
+    else
+        CHECK_FILE=""
+    fi
 
     if [ -z "$CHECK_FILE" ] || [ ! -f "$CHECK_FILE" ]; then
         MAX_POLARS_THREADS=4 meds-torch-tune model=$METHOD callbacks=tune_default trainer=ray \
