@@ -6,6 +6,8 @@ from meds_torch.utils.logging_utils import log_hyperparameters  # noqa
 from meds_torch.utils.pylogger import RankedLogger  # noqa
 from meds_torch.utils.rich_utils import enforce_tags, print_config_tree  # noqa
 from meds_torch.utils.utils import (  # noqa
+    call_trainer_fit,
+    call_trainer_test,
     configure_logging,
     get_metric_value,
     task_wrapper,

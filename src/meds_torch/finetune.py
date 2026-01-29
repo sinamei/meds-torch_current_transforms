@@ -10,6 +10,8 @@ from omegaconf import DictConfig, OmegaConf, open_dict
 
 from meds_torch.utils import (
     RankedLogger,
+    call_trainer_fit,
+    call_trainer_test,
     configure_logging,
     get_metric_value,
     instantiate_callbacks,
@@ -40,7 +42,7 @@ def initialize_finetune_objects(cfg: DictConfig, **kwargs) -> Trainer:
         pretrain_cfg.model.vocab_size = cfg.data.vocab_size
 
     pretrain_model: LightningModule = hydra.utils.instantiate(pretrain_cfg.model)
-    checkpoint = torch.load(cfg.pretrain_ckpt_path, map_location="cpu")
+    checkpoint = torch.load(cfg.pretrain_ckpt_path, map_location="cpu", weights_only=False)
     pretrain_model.load_state_dict(checkpoint["state_dict"])
 
     # set seed for random number generators in pytorch, numpy and python.random
@@ -119,7 +121,12 @@ def finetune(cfg: DictConfig) -> tuple[dict[str, Any], dict[str, Any]]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        call_trainer_fit(
+            trainer=trainer,
+            model=model,
+            datamodule=datamodule,
+            ckpt_path=cfg.get("ckpt_path"),
+        )
 
     train_metrics = trainer.callback_metrics
 
@@ -129,7 +136,12 @@ def finetune(cfg: DictConfig) -> tuple[dict[str, Any], dict[str, Any]]:
         if ckpt_path == "":
             log.warning("Best ckpt not found! Using current weights for testing...")
             ckpt_path = None
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
+        call_trainer_test(
+            trainer=trainer,
+            model=model,
+            datamodule=datamodule,
+            ckpt_path=ckpt_path,
+        )
         log.info(f"Best ckpt path: {ckpt_path}")
 
     test_metrics = trainer.callback_metrics

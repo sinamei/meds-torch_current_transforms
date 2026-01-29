@@ -11,6 +11,8 @@ from omegaconf import DictConfig
 
 from meds_torch.utils import (
     RankedLogger,
+    call_trainer_fit,
+    call_trainer_test,
     configure_logging,
     get_metric_value,
     instantiate_callbacks,
@@ -92,7 +94,12 @@ def train(cfg: DictConfig) -> tuple[dict[str, Any], dict[str, Any]]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        call_trainer_fit(
+            trainer=trainer,
+            model=model,
+            datamodule=datamodule,
+            ckpt_path=cfg.get("ckpt_path"),
+        )
 
     train_metrics = trainer.callback_metrics
 
@@ -106,7 +113,12 @@ def train(cfg: DictConfig) -> tuple[dict[str, Any], dict[str, Any]]:
         if best_model_path == "":
             log.warning("Best ckpt not found! Using current weights for testing...")
             best_model_path = None
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=best_model_path)
+        call_trainer_test(
+            trainer=trainer,
+            model=model,
+            datamodule=datamodule,
+            ckpt_path=best_model_path,
+        )
         log.info(f"Best ckpt path: {best_model_path}")
 
     test_metrics = trainer.callback_metrics

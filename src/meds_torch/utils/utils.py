@@ -1,3 +1,4 @@
+import inspect
 import warnings
 from collections.abc import Callable
 from functools import wraps
@@ -118,3 +119,17 @@ def get_metric_value(metric_dict: dict[str, Any], metric_name: str | None) -> fl
     log.info(f"Retrieved metric value! <{metric_name}={metric_value}>")
 
     return metric_value
+
+
+def call_trainer_fit(*, trainer: Any, model: Any, datamodule: Any, ckpt_path: str | None) -> Any:
+    """Call Trainer.fit with weights_only=False when supported."""
+    if "weights_only" in inspect.signature(trainer.fit).parameters:
+        return trainer.fit(model=model, datamodule=datamodule, ckpt_path=ckpt_path, weights_only=False)
+    return trainer.fit(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
+
+
+def call_trainer_test(*, trainer: Any, model: Any, datamodule: Any, ckpt_path: str | None) -> Any:
+    """Call Trainer.test with weights_only=False when supported."""
+    if "weights_only" in inspect.signature(trainer.test).parameters:
+        return trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path, weights_only=False)
+    return trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)

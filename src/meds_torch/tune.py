@@ -191,7 +191,7 @@ def main(cfg: DictConfig) -> float | None:
     checkpoint_paths = summary_df.map_rows(
         lambda x: get_checkpoint_path(x[log_dir_index], x[ckpt_dir_name_index], cfg.paths.time_output_dir)
     )
-    summary_df = summary_df.with_columns(best_checkpoint_path=checkpoint_paths.to_series())
+    summary_df = summary_df.with_columns(best_checkpoint1_path=checkpoint_paths.to_series())
 
     if cfg.get("test"):
         logger.info("Computing Test Results")
